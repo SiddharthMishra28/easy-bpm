@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Flow;
+use App\Models\Ticket;
 use App\Services\FlowVersionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FlowController extends Controller
 {
@@ -43,52 +45,55 @@ class FlowController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Conditional Soft Delete a Flow.
+     * Only allowed if no in-flight tickets reference the latest version.
      */
-    public function show(string $id)
+    public function destroy(Flow $flow)
     {
-        return Flow::with('latestVersion')->findOrFail($id);
-    }
+        // 1. Check for in-flight tickets linked to the LATEST version
+        $inFlightTicketsCount = Ticket::where('flow_version_id', $flow->latest_version_id)
+                                      ->where('status', 'IN_PROGRESS')
+                                      ->count();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'nullable|string',
-            'flow_structure' => 'required|array',
-        ]);
-
-        $flow = Flow::findOrFail($id);
-
-        if ($request->has('name') || $request->has('description')) {
-            $flow->update($request->only('name', 'description'));
+        if ($inFlightTicketsCount > 0) {
+            return response()->json([
+                'message' => 'Cannot delete flow. In-flight tickets are linked to the current version.',
+                'in_flight_count' => $inFlightTicketsCount
+            ], 409); // HTTP 409 Conflict
         }
 
-        $this->flowVersionService->createNewVersion($flow, $request->flow_structure);
+        try {
+            // 2. Perform Soft Delete (deleted_at will be set)
+            $flow->delete();
 
-        return response()->json($flow->load('latestVersion'));
+            // Optional: You may also soft-delete related FlowVersions,
+            // but the prompt only strictly requires the master Flow deletion.
+
+            return response()->json(null, 204);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to delete flow.', 'error' => $e->getMessage()], 500);
+        }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Retrieve the master Flow and its latest version definition.
      */
-    public function destroy(string $id)
+    public function show(Flow $flow)
     {
-        $flow = Flow::findOrFail($id);
-        $flow->delete();
+        // Eager load the latest version to show the current structure
+        $flow->load('latestVersion');
 
-        return response()->json(null, 204);
+        return response()->json($flow, 200);
     }
 
     /**
-     * Display a listing of the versions for the specified resource.
+     * Retrieve all immutable flow versions.
      */
-    public function versions(string $id)
+    public function versions(Flow $flow)
     {
-        $flow = Flow::findOrFail($id);
-        return $flow->versions()->orderBy('version_number', 'desc')->get();
+        // Retrieve all associated FlowVersions
+        $versions = $flow->versions()->orderByDesc('version_number')->get();
+
+        return response()->json($versions, 200);
     }
 }
