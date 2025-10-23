@@ -2,7 +2,6 @@
   "name": "PHP & MySQL",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspace/BPM_API",
   "remoteUser": "vscode",
   "customizations": {
     "vscode": {
