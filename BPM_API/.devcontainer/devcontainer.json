@@ -1,0 +1,19 @@
+{
+  "name": "PHP & MySQL",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "felixfbecker.php-pack",
+        "cweijan.vscode-mysql-client2"
+      ]
+    }
+  },
+  "forwardPorts": [
+    9000,
+    3306
+  ]
+}
