@@ -19,4 +19,4 @@ RUN docker-php-ext-install pdo_mysql mbstring curl xml dom zip gd
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set the working directory
-WORKDIR /
+WORKDIR /workspace
