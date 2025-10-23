@@ -1,0 +1,380 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "BPM API",
+        "description": "A Business Process Management API with a dynamic rule engine and immutable versioning.",
+        "contact": {
+            "email": "support@example.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/flows": {
+            "get": {
+                "tags": [
+                    "Flows"
+                ],
+                "summary": "Display a listing of the resource.",
+                "operationId": "e9e7f60ded54b285f3d24b4ac7250253",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation."
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Flows"
+                ],
+                "summary": "Store a newly created resource in storage.",
+                "operationId": "d12af90b3426c7fe578944957cc30856",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "flow_structure"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "New Flow"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "A description for the new flow."
+                                    },
+                                    "flow_structure": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Flow created successfully."
+                    }
+                }
+            }
+        },
+        "/flows/{id}": {
+            "get": {
+                "tags": [
+                    "Flows"
+                ],
+                "summary": "Retrieve the master Flow and its latest version definition.",
+                "operationId": "1882a97c8d6acdd4a356a61b0c5c6218",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Flows"
+                ],
+                "summary": "Conditional Soft Delete a Flow.",
+                "operationId": "11031b602aeb7bdb1a1e83d46ce67d59",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Flow deleted successfully."
+                    },
+                    "409": {
+                        "description": "Conflict, in-flight tickets exist."
+                    }
+                }
+            }
+        },
+        "/flows/{id}/versions": {
+            "get": {
+                "tags": [
+                    "Flows"
+                ],
+                "summary": "Retrieve all immutable flow versions.",
+                "operationId": "de8a0a172faf5b6988bea82e1237550c",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation."
+                    }
+                }
+            }
+        },
+        "/tickets": {
+            "post": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Create a new ticket instance.",
+                "operationId": "0f82fdde1437d948b90892e1b714a1cc",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "flow_id"
+                                ],
+                                "properties": {
+                                    "flow_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "ticket_data": {
+                                        "type": "object",
+                                        "example": {
+                                            "priority": "High"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Ticket created successfully."
+                    },
+                    "400": {
+                        "description": "Bad request, e.g., flow has no start stage."
+                    }
+                }
+            }
+        },
+        "/tickets/{id}": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Retrieve a ticket and its current flow context.",
+                "operationId": "7231698c431b84bf9e4919256db5db1d",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation."
+                    }
+                }
+            }
+        },
+        "/tickets/{id}/data": {
+            "put": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Update the flexible JSON payload of a ticket.",
+                "operationId": "3ea20de350e85cf067cf20763f99a709",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "data"
+                                ],
+                                "properties": {
+                                    "data": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Ticket data updated successfully."
+                    }
+                }
+            }
+        },
+        "/tickets/{id}/tasks/{taskId}": {
+            "put": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Mark a specific task as complete/incomplete.",
+                "operationId": "0eb2b1b9ce18ce021f43ee5e995543f2",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "taskId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "is_complete"
+                                ],
+                                "properties": {
+                                    "is_complete": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Task status updated successfully."
+                    }
+                }
+            }
+        },
+        "/tickets/{id}/advance": {
+            "post": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Advance a ticket to the next stage using the Flow's rule engine.",
+                "operationId": "1ce9214ff469480e6774804e53fd60aa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ticket successfully advanced to the next stage/status."
+                    },
+                    "400": {
+                        "description": "Advancement blocked due to missing mandatory tasks/checkpoints.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Advancement failed. Mandatory checkpoints are incomplete."
+                                        },
+                                        "validation_errors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Advancement blocked because no routing rules qualified for the ticket data.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Advancement failed. No routing rules qualified for the ticket data."
+                                        },
+                                        "routing_failures": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Flows",
+            "description": "Flows"
+        },
+        {
+            "name": "Tickets",
+            "description": "Tickets"
+        }
+    ]
+}

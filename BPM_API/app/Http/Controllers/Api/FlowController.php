@@ -19,7 +19,12 @@ class FlowController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *     path="/flows",
+     *     summary="Display a listing of the resource.",
+     *     tags={"Flows"},
+     *     @OA\Response(response=200, description="Successful operation.")
+     * )
      */
     public function index()
     {
@@ -27,7 +32,21 @@ class FlowController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/flows",
+     *     summary="Store a newly created resource in storage.",
+     *     tags={"Flows"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "flow_structure"},
+     *             @OA\Property(property="name", type="string", example="New Flow"),
+     *             @OA\Property(property="description", type="string", example="A description for the new flow."),
+     *             @OA\Property(property="flow_structure", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Flow created successfully.")
+     * )
      */
     public function store(Request $request)
     {
@@ -45,12 +64,17 @@ class FlowController extends Controller
     }
 
     /**
-     * Conditional Soft Delete a Flow.
-     * Only allowed if no in-flight tickets reference the latest version.
+     * @OA\Delete(
+     *     path="/flows/{id}",
+     *     summary="Conditional Soft Delete a Flow.",
+     *     tags={"Flows"},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=204, description="Flow deleted successfully."),
+     *     @OA\Response(response=409, description="Conflict, in-flight tickets exist.")
+     * )
      */
     public function destroy(Flow $flow)
     {
-        // 1. Check for in-flight tickets linked to the LATEST version
         $inFlightTicketsCount = Ticket::where('flow_version_id', $flow->latest_version_id)
                                       ->where('status', 'IN_PROGRESS')
                                       ->count();
@@ -59,16 +83,11 @@ class FlowController extends Controller
             return response()->json([
                 'message' => 'Cannot delete flow. In-flight tickets are linked to the current version.',
                 'in_flight_count' => $inFlightTicketsCount
-            ], 409); // HTTP 409 Conflict
+            ], 409);
         }
 
         try {
-            // 2. Perform Soft Delete (deleted_at will be set)
             $flow->delete();
-
-            // Optional: You may also soft-delete related FlowVersions,
-            // but the prompt only strictly requires the master Flow deletion.
-
             return response()->json(null, 204);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to delete flow.', 'error' => $e->getMessage()], 500);
@@ -76,24 +95,32 @@ class FlowController extends Controller
     }
 
     /**
-     * Retrieve the master Flow and its latest version definition.
+     * @OA\Get(
+     *     path="/flows/{id}",
+     *     summary="Retrieve the master Flow and its latest version definition.",
+     *     tags={"Flows"},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Successful operation.")
+     * )
      */
     public function show(Flow $flow)
     {
-        // Eager load the latest version to show the current structure
         $flow->load('latestVersion');
-
         return response()->json($flow, 200);
     }
 
     /**
-     * Retrieve all immutable flow versions.
+     * @OA\Get(
+     *     path="/flows/{id}/versions",
+     *     summary="Retrieve all immutable flow versions.",
+     *     tags={"Flows"},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response=200, description="Successful operation.")
+     * )
      */
     public function versions(Flow $flow)
     {
-        // Retrieve all associated FlowVersions
         $versions = $flow->versions()->orderByDesc('version_number')->get();
-
         return response()->json($versions, 200);
     }
 }
