@@ -2,12 +2,15 @@
 
 use App\Http\Controllers\Api\FlowController;
 use App\Http\Controllers\Api\TicketController;
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/tokens', [AuthController::class, 'createToken']);
 
 Route::middleware('auth:sanctum')->group(function () {
     // Flow Management
@@ -23,6 +26,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/tickets/{ticket}/data', [TicketController::class, 'updateData']);
     Route::put('/tickets/{ticket}/tasks/{taskId}', [TicketController::class, 'updateTaskStatus']);
 
-    // Core Advancement Endpoint (to be implemented in Step 11)
+    // Core Advancement Endpoint
     Route::post('/tickets/{ticket}/advance', [TicketController::class, 'advanceTicket']);
 });
