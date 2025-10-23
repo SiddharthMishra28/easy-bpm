@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ../..:/workspace
+      - ..:/workspace
     ports:
       - "9000:9000"
     command: tail -f /dev/null
