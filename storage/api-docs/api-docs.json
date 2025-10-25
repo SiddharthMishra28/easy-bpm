@@ -366,7 +366,37 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Ticket successfully advanced to the next stage/status."
+                        "description": "Ticket successfully advanced to the next stage/status.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ticket successfully advanced."
+                                        },
+                                        "current_stage_id": {
+                                            "type": "integer",
+                                            "example": 2
+                                        },
+                                        "status": {
+                                            "type": "string",
+                                            "example": "IN_PROGRESS"
+                                        },
+                                        "summary": {
+                                            "properties": {
+                                                "rule_passed": {
+                                                    "type": "string",
+                                                    "example": "High Priority Routing"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Advancement blocked due to missing mandatory tasks/checkpoints.",
@@ -381,6 +411,20 @@
                                         "validation_errors": {
                                             "type": "array",
                                             "items": {
+                                                "properties": {
+                                                    "task_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "task_name": {
+                                                        "type": "string",
+                                                        "example": "Verify User Identity"
+                                                    },
+                                                    "stage_id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    }
+                                                },
                                                 "type": "object"
                                             }
                                         }
@@ -403,6 +447,19 @@
                                         "routing_failures": {
                                             "type": "array",
                                             "items": {
+                                                "properties": {
+                                                    "rule": {
+                                                        "type": "string",
+                                                        "example": "High Priority Routing"
+                                                    },
+                                                    "errors": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "Group 'Priority Check' failed: Condition priority_level == 'High' was not met."
+                                                        }
+                                                    }
+                                                },
                                                 "type": "object"
                                             }
                                         }

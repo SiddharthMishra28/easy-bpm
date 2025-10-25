@@ -160,23 +160,61 @@ class TicketController extends Controller
 
     /**
      * @OA\Post(
-     * path="/tickets/{ticket}/advance",
-     * summary="Advance a ticket to the next stage using the Flow's rule engine.",
-     * tags={"Tickets"},
-     * @OA\Parameter(name="ticket", in="path", required=true, @OA\Schema(type="integer")),
-     * @OA\Response(response=200, description="Ticket successfully advanced to the next stage/status."),
-     * @OA\Response(response=400, description="Advancement blocked due to missing mandatory tasks/checkpoints.",
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Advancement failed. Mandatory checkpoints are incomplete."),
-     * @OA\Property(property="validation_errors", type="array", @OA\Items(type="object"))
-     * )
-     * ),
-     * @OA\Response(response=409, description="Advancement blocked because no routing rules qualified for the ticket data.",
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="Advancement failed. No routing rules qualified for the ticket data."),
-     * @OA\Property(property="routing_failures", type="array", @OA\Items(type="object"))
-     * )
-     * ),
+     *     path="/tickets/{ticket}/advance",
+     *     summary="Advance a ticket to the next stage using the Flow's rule engine.",
+     *     tags={"Tickets"},
+     *     @OA\Parameter(name="ticket", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Ticket successfully advanced to the next stage/status.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Ticket successfully advanced."),
+     *             @OA\Property(property="current_stage_id", type="integer", example=2),
+     *             @OA\Property(property="status", type="string", example="IN_PROGRESS"),
+     *             @OA\Property(
+     *                 property="summary",
+     *                 type="object",
+     *                 @OA\Property(property="rule_passed", type="string", example="High Priority Routing")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Advancement blocked due to missing mandatory tasks/checkpoints.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Advancement failed. Mandatory checkpoints are incomplete."),
+     *             @OA\Property(
+     *                 property="validation_errors",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="task_id", type="integer", example=1),
+     *                     @OA\Property(property="task_name", type="string", example="Verify User Identity"),
+     *                     @OA\Property(property="stage_id", type="integer", example=1)
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=409,
+     *         description="Advancement blocked because no routing rules qualified for the ticket data.",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="Advancement failed. No routing rules qualified for the ticket data."),
+     *             @OA\Property(
+     *                 property="routing_failures",
+     *                 type="array",
+     *                 @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="rule", type="string", example="High Priority Routing"),
+     *                     @OA\Property(
+     *                         property="errors",
+     *                         type="array",
+     *                         @OA\Items(type="string", example="Group 'Priority Check' failed: Condition priority_level == 'High' was not met.")
+     *                     )
+     *                 )
+     *             )
+     *         )
+     *     )
      * )
      */
     public function advanceTicket(Ticket $ticket): JsonResponse
