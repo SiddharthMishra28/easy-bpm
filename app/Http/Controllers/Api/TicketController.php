@@ -72,10 +72,10 @@ class TicketController extends Controller
 
     /**
      * @OA\Get(
-     *     path="/tickets/{id}",
+     *     path="/tickets/{ticket}",
      *     summary="Retrieve a ticket and its current flow context.",
      *     tags={"Tickets"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="ticket", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(response=200, description="Successful operation.")
      * )
      */
@@ -87,10 +87,10 @@ class TicketController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/tickets/{id}/data",
+     *     path="/tickets/{ticket}/data",
      *     summary="Update the flexible JSON payload of a ticket.",
      *     tags={"Tickets"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="ticket", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -119,10 +119,10 @@ class TicketController extends Controller
 
     /**
      * @OA\Put(
-     *     path="/tickets/{id}/tasks/{taskId}",
+     *     path="/tickets/{ticket}/tasks/{taskId}",
      *     summary="Mark a specific task as complete/incomplete.",
      *     tags={"Tickets"},
-     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(name="ticket", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Parameter(name="taskId", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\RequestBody(
      *         required=true,
@@ -160,10 +160,10 @@ class TicketController extends Controller
 
     /**
      * @OA\Post(
-     * path="/tickets/{id}/advance",
+     * path="/tickets/{ticket}/advance",
      * summary="Advance a ticket to the next stage using the Flow's rule engine.",
      * tags={"Tickets"},
-     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Parameter(name="ticket", in="path", required=true, @OA\Schema(type="integer")),
      * @OA\Response(response=200, description="Ticket successfully advanced to the next stage/status."),
      * @OA\Response(response=400, description="Advancement blocked due to missing mandatory tasks/checkpoints.",
      * @OA\JsonContent(

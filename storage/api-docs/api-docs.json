@@ -89,6 +89,55 @@
                     }
                 }
             },
+            "put": {
+                "tags": [
+                    "Flows"
+                ],
+                "summary": "Update a flow and create a new version.",
+                "operationId": "69646e0d6acf494f8c69772d2c2b8986",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "flow_structure"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Updated Flow Name"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "Updated description."
+                                    },
+                                    "flow_structure": {
+                                        "type": "object"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Flow updated successfully."
+                    }
+                }
+            },
             "delete": {
                 "tags": [
                     "Flows"
@@ -181,16 +230,16 @@
                 }
             }
         },
-        "/tickets/{id}": {
+        "/tickets/{ticket}": {
             "get": {
                 "tags": [
                     "Tickets"
                 ],
                 "summary": "Retrieve a ticket and its current flow context.",
-                "operationId": "7231698c431b84bf9e4919256db5db1d",
+                "operationId": "e266c2c37a5df4ec1d5da7565bd6e2ae",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "ticket",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -205,16 +254,16 @@
                 }
             }
         },
-        "/tickets/{id}/data": {
+        "/tickets/{ticket}/data": {
             "put": {
                 "tags": [
                     "Tickets"
                 ],
                 "summary": "Update the flexible JSON payload of a ticket.",
-                "operationId": "3ea20de350e85cf067cf20763f99a709",
+                "operationId": "e2693dc626c94e519694f0f01ee9eb69",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "ticket",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -247,16 +296,16 @@
                 }
             }
         },
-        "/tickets/{id}/tasks/{taskId}": {
+        "/tickets/{ticket}/tasks/{taskId}": {
             "put": {
                 "tags": [
                     "Tickets"
                 ],
                 "summary": "Mark a specific task as complete/incomplete.",
-                "operationId": "0eb2b1b9ce18ce021f43ee5e995543f2",
+                "operationId": "c7da260e293ddafc0c4b6c10c5ea41bf",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "ticket",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -298,16 +347,16 @@
                 }
             }
         },
-        "/tickets/{id}/advance": {
+        "/tickets/{ticket}/advance": {
             "post": {
                 "tags": [
                     "Tickets"
                 ],
                 "summary": "Advance a ticket to the next stage using the Flow's rule engine.",
-                "operationId": "1ce9214ff469480e6774804e53fd60aa",
+                "operationId": "c41b0db9b91712cd8f2540805cb0539a",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "ticket",
                         "in": "path",
                         "required": true,
                         "schema": {
@@ -365,6 +414,63 @@
                     }
                 }
             }
+        },
+        "/tokens": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Create an API token",
+                "description": "Create a new API token for a user.",
+                "operationId": "createToken",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "1|abcdef123456"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
         }
     },
     "tags": [
@@ -375,6 +481,10 @@
         {
             "name": "Tickets",
             "description": "Tickets"
+        },
+        {
+            "name": "Authentication",
+            "description": "Authentication"
         }
     ]
 }
