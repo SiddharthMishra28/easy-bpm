@@ -64,6 +64,41 @@ class FlowController extends Controller
     }
 
     /**
+     * @OA\Put(
+     *     path="/flows/{id}",
+     *     summary="Update a flow and create a new version.",
+     *     tags={"Flows"},
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "flow_structure"},
+     *             @OA\Property(property="name", type="string", example="Updated Flow Name"),
+     *             @OA\Property(property="description", type="string", example="Updated description."),
+     *             @OA\Property(property="flow_structure", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Flow updated successfully.")
+     * )
+     */
+    public function update(Request $request, Flow $flow)
+    {
+        $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|nullable|string',
+            'flow_structure' => 'sometimes|required|array',
+        ]);
+
+        $flow->update($request->only('name', 'description'));
+
+        if ($request->has('flow_structure')) {
+            $this->flowVersionService->createNewVersion($flow, $request->flow_structure);
+        }
+
+        return response()->json($flow->load('latestVersion'), 200);
+    }
+
+    /**
      * @OA\Delete(
      *     path="/flows/{id}",
      *     summary="Conditional Soft Delete a Flow.",
